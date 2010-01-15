@@ -1,3 +1,9 @@
+frei0r (1.1.22git20091109-1) UNRELEASED; urgency=low
+
+  * New import from upstream.
+
+ -- Luca Bigliardi <shammash@artha.org>  Fri, 15 Jan 2010 16:25:11 +0100
+
 frei0r (1.1.22git20090409-2) unstable; urgency=low
 
   * Conflict with unofficial package frei0r (Closes: #526634).
