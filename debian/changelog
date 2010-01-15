@@ -1,8 +1,9 @@
 frei0r (1.1.22git20091109-1) UNRELEASED; urgency=low
 
   * New import from upstream.
+  * Increase standard version to 3.8.3.
 
- -- Luca Bigliardi <shammash@artha.org>  Fri, 15 Jan 2010 16:25:11 +0100
+ -- Luca Bigliardi <shammash@artha.org>  Fri, 15 Jan 2010 16:33:42 +0100
 
 frei0r (1.1.22git20090409-2) unstable; urgency=low
 
