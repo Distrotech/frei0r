@@ -28,6 +28,9 @@
 /* define if enabling MMX acceleration */
 #undef HAVE_MMX
 
+/* compiled including opencv */
+#undef HAVE_OPENCV
+
 /* Define to 1 if you have the `pow' function. */
 #undef HAVE_POW
 
@@ -73,6 +76,9 @@
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
 #undef LT_OBJDIR
+
+/* opencv data prefix */
+#undef OPENCV_DATA_DIR
 
 /* Name of package */
 #undef PACKAGE
