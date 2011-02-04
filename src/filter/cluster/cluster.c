@@ -86,7 +86,7 @@ void f0r_get_plugin_info(f0r_plugin_info_t* inverterInfo)
   inverterInfo->name = "K-Means Clustering";
   inverterInfo->author = "binarymillenium";
   inverterInfo->plugin_type = F0R_PLUGIN_TYPE_FILTER;
-  inverterInfo->color_model = F0R_COLOR_MODEL_BGRA8888;
+  inverterInfo->color_model = F0R_COLOR_MODEL_RGBA8888;
   inverterInfo->frei0r_version = FREI0R_MAJOR_VERSION;
   inverterInfo->major_version = 0; 
   inverterInfo->minor_version = 1; 
@@ -121,7 +121,7 @@ void f0r_get_param_info(f0r_param_info_t* info, int param_index)
 
 f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 {
-	cluster_instance_t* inst = calloc(1, sizeof(*inst));
+	cluster_instance_t* inst = (cluster_instance_t*)calloc(1, sizeof(*inst));
 
 	inst->width = width; inst->height = height;
 

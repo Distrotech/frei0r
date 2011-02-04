@@ -18,12 +18,15 @@ alphaover.la  darken.la      gamma.la          ising0r.la      overlay.la    sof
 alphaxor.la   delay0r.la                lighten.la      pixeliz0r.la  squareblur.la  contrast0r.la\
 blend.la      difference.la  grain_extract.la  lissajous0r.la  saturat0r.la\
 subtract.la letterb0xed.la R.la G.la B.la RGB.la composition.la alphainjection.la\
-water.la nervous.la baltan.la partik0l.la cartoon.la vertigo.la delaygrab.la \
+nervous.la baltan.la partik0l.la cartoon.la vertigo.la delaygrab.la \
 glow.la lenscorrection.la transparency.la \
 colordistance.la perspective.la uvmap.la luminance.la edgeglow.la \
 cluster.la balanc0r.la tint0r.la levels.la curves.la three_point_balance.la \
 bluescreen0r.la primaries.la threelay0r.la \
-plasma.la
+plasma.la c0rners.la defish0r.la coloradj_RGB.la \
+alpha0ps.la alphagrad.la alphaspot.la d90stairsteppingfix.la  sopsat.la \
+pr0be.la pr0file.la select0r.la test_pat_B.la test_pat_C.la test_pat_G.la \
+test_pat_I.la test_pat_L.la test_pat_R.la hqdn3d.la sharpness.la
 
 if HAVE_GAVL
 plugin_LTLIBRARIES += scale0tilt.la
@@ -43,10 +46,10 @@ rgbparade_la_LIBADD = @GAVL_LIBS@
 endif
 
 if HAVE_OPENCV
-plugin_LTLIBRARIES += facedetect.la
-facedetect_la_SOURCES = filter/facedetect/facedetect.c
-facedetect_la_CFLAGS = @OPENCV_CFLAGS@ @CFLAGS@ 
-facedetect_la_LIBADD = @OPENCV_LIBS@
+plugin_LTLIBRARIES += facebl0r.la
+facebl0r_la_SOURCES = filter/facebl0r/facebl0r.cpp
+facebl0r_la_CFLAGS = @OPENCV_CFLAGS@ @CFLAGS@ 
+facebl0r_la_LIBADD = @OPENCV_LIBS@
 endif
 
 cluster_la_SOURCES = filter/cluster/cluster.c
@@ -58,7 +61,6 @@ transparency_la_SOURCES = filter/transparency/transparency.c
 lenscorrection_la_SOURCES = filter/lenscorrection/lenscorrection.c
 glow_la_SOURCES = filter/glow/glow.c filter/glow/blur.h
 cartoon_la_SOURCES = filter/cartoon/cartoon.cpp
-water_la_SOURCES = filter/water/water.cpp
 nervous_la_SOURCES = filter/nervous/nervous.cpp
 baltan_la_SOURCES = filter/baltan/baltan.cpp
 delaygrab_la_SOURCES = filter/delaygrab/delaygrab.cpp
@@ -96,13 +98,32 @@ curves_la_SOURCES = filter/curves/curves.c
 bluescreen0r_la_SOURCES = filter/bluescreen0r/bluescreen0r.cpp
 primaries_la_SOURCES = filter/primaries/primaries.cpp
 threelay0r_la_SOURCES = filter/threelay0r/threelay0r.cpp
-
 three_point_balance_la_SOURCES = filter/three_point_balance/three_point_balance.c
+c0rners_la_SOURCES = filter/c0rners/c0rners.c filter/c0rners/interp.h
+defish0r_la_SOURCES = filter/defish0r/defish0r.c filter/defish0r/interp.h
+coloradj_RGB_la_SOURCES = filter/coloradj/coloradj_RGB.c
+alpha0ps_la_SOURCES = filter/alpha0ps/alpha0ps.c
+alphagrad_la_SOURCES = filter/alpha0ps/alphagrad.c
+alphaspot_la_SOURCES = filter/alpha0ps/alphaspot.c
+d90stairsteppingfix_la_SOURCES = filter/d90stairsteppingfix/d90stairsteppingfix.cpp
+sopsat_la_SOURCES = filter/sopsat/sopsat.cpp
+pr0be_la_SOURCES = filter/measure/pr0be.c filter/measure/measure.h filter/measure/font2.h
+pr0file_la_SOURCES = filter/measure/pr0file.c filter/measure/measure.h filter/measure/font2.h
+select0r_la_SOURCES = filter/select0r/select0r.c
+hqdn3d_la_SOURCES = filter/denoise/hqdn3d.c
+sharpness_la_SOURCES = filter/sharpness/sharpness.c
+
 ising0r_la_SOURCES = generator/ising0r/ising0r.c
 lissajous0r_la_SOURCES = generator/lissajous0r/lissajous0r.cpp
 nois0r_la_SOURCES = generator/nois0r/nois0r.cpp
 onecol0r_la_SOURCES = generator/onecol0r/onecol0r.cpp
 plasma_la_SOURCES = generator/dem0scene/plasma.cpp
+test_pat_B_la_SOURCES = generator/test_pat/test_pat_B.c
+test_pat_C_la_SOURCES = generator/test_pat/test_pat_C.c
+test_pat_G_la_SOURCES = generator/test_pat/test_pat_G.c
+test_pat_I_la_SOURCES = generator/test_pat/test_pat_I.c
+test_pat_L_la_SOURCES = generator/test_pat/test_pat_L.c
+test_pat_R_la_SOURCES = generator/test_pat/test_pat_R.c
 
 uvmap_la_SOURCES = mixer2/uvmap/uvmap.c
 composition_la_SOURCES = mixer2/composition/composition.c

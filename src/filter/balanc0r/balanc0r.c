@@ -586,7 +586,7 @@ void f0r_get_param_info(f0r_param_info_t* info, int param_index)
 
 f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 {
-	balanc0r_instance_t* inst = calloc(1, sizeof(*inst));
+	balanc0r_instance_t* inst = (balanc0r_instance_t*)calloc(1, sizeof(*inst));
 	inst->width = width; inst->height = height;
 	inst->color.r = 1.0;
 	inst->color.g = 1.0;
@@ -625,7 +625,7 @@ void f0r_set_param_value(f0r_instance_t instance,
 	balanc0r_instance_t* inst = (balanc0r_instance_t*)instance;
 
 	switch(param_index) {
-		case 0:
+		case 0: {
 			inst->color = *((f0r_param_color_t*)param);
 			int    l = 0;
 			int    r = sizeof(bbWB)/sizeof(float)/3;
@@ -651,6 +651,7 @@ void f0r_set_param_value(f0r_instance_t instance,
 			}
 			setRGBmult(inst);
 			break;
+		}
 		case 1:
 		{
 			double g = *((double*)param);

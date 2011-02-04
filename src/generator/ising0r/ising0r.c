@@ -22,6 +22,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <assert.h>
 #include <math.h>
 #include <string.h>
+#if defined(_MSC_VER)
+#define __STDC_LIMIT_MACROS
+#endif /* _MSC_VER */
 #include "frei0r.h"
 
 //-------------------------------------------------------------------------
@@ -80,7 +83,7 @@ void f0r_get_plugin_info(f0r_plugin_info_t* nois0rInfo)
   nois0rInfo->name           = "Ising0r";
   nois0rInfo->author         = "Gephex crew";
   nois0rInfo->plugin_type    = F0R_PLUGIN_TYPE_SOURCE;
-  nois0rInfo->color_model    = F0R_COLOR_MODEL_BGRA8888;
+  nois0rInfo->color_model    = F0R_COLOR_MODEL_PACKED32;
   nois0rInfo->frei0r_version = FREI0R_MAJOR_VERSION;
   nois0rInfo->major_version  = 0;
   nois0rInfo->minor_version  = 9;
@@ -109,7 +112,7 @@ void f0r_get_param_info(f0r_param_info_t* info, int param_index)
 
 f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 {
-  ising0r_instance_t* inst = calloc(1, sizeof(*inst));
+  ising0r_instance_t* inst = (ising0r_instance_t*)calloc(1, sizeof(*inst));
   inst->width  = width; 
   inst->height = height;
 

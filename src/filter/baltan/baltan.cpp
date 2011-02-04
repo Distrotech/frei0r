@@ -70,7 +70,7 @@ Baltan::Baltan(int wdt, int hgt) {
   pixels = geo.w*geo.h;
   
   planebuf = (uint32_t*)malloc(geo.size*PLANES);
-  bzero(planebuf, geo.size*PLANES);
+  memset(planebuf, 0, geo.size*PLANES);
     
   for(i=0;i<PLANES;i++)
     planetable[i] = &planebuf[pixels*i];
@@ -87,23 +87,25 @@ Baltan::~Baltan() {
 void Baltan::update() {
   int i, cf;
 
-  uint32_t *buf = (uint32_t*)in;
+  uint32_t *src = (uint32_t*)in;
   uint32_t *dst = (uint32_t*)out;
 
   
   for(i=0; i<pixels; i++)
-    planetable[plane][i] = (buf[i] & 0xfcfcfc)>>2;
+    planetable[plane][i] = (src[i] & 0xfcfcfc)>>2;
   
 
   cf = plane & (STRIDE-1);
   
   for(i=0; i<pixels; i++) {
-    dst[i] = planetable[cf][i]
-      + planetable[cf+STRIDE][i]
-      + planetable[cf+STRIDE2][i]
-      + planetable[cf+STRIDE3][i];
+    dst[i] = (src[i]&0xFF000000)
+      |(planetable[cf][i]
+	+ planetable[cf+STRIDE][i]
+	+ planetable[cf+STRIDE2][i]
+	+ planetable[cf+STRIDE3][i]);
     planetable[plane][i] = (dst[i]&0xfcfcfc)>>2;
   }
+
 
   plane++;
   plane = plane & (PLANES-1);
