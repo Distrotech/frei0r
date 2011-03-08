@@ -22,7 +22,6 @@
 
 #include <frei0r.hpp>
 
-
 typedef struct {
   IplImage* hsv;     //input image converted to HSV
   IplImage* hue;     //hue channel of HSV image
@@ -43,7 +42,7 @@ public:
     FaceBl0r(int wdt, int hgt);
     ~FaceBl0r();
 
-    virtual void update();
+    void update();
 
 private:
     
@@ -67,39 +66,53 @@ private:
     CvHaarClassifierCascade* cascade;
     CvMemStorage* storage;
 
+    // plugin parameters
+    f0r_param_bool ellipse;
+    f0r_param_double recheck;
+    f0r_param_double threads;
+    f0r_param_double search_scale;
+    f0r_param_double neighbors;
+    f0r_param_double smallest;
+    f0r_param_double largest;
 
-    int face_found;
-    int face_notfound;
-    unsigned int width;
-    unsigned int height;
-    unsigned int size; // = width * height
+    unsigned int face_found;
+    unsigned int face_notfound;
 };
 
 
 frei0r::construct<FaceBl0r> plugin("FaceBl0r",
-				  "automatic face blur ",
-				  "ZioKernel, Biilly, Jilt, Jaromil",
-				  1,0);
+				  "automatic face blur",
+				  "ZioKernel, Biilly, Jilt, Jaromil, ddennedy",
+				  1,1, F0R_COLOR_MODEL_PACKED32);
 
 FaceBl0r::FaceBl0r(int wdt, int hgt) {
-
-  width = wdt;
-  height = hgt;
-  size = width*height*4;
 
   face_rect = 0;
   image = 0;
   tracked_obj = 0;
   face_found = 0;
-  face_notfound = 1;
   
   cascade = 0;
   storage = 0;
   
   register_param("/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml",
-                 "classifier",
-                 "full path to the XML pattern model for recognition; look in /usr/share/opencv/haarcascades"); 
-
+                 "Classifier",
+                 "Full path to the XML pattern model for recognition; look in /usr/share/opencv/haarcascades");
+  ellipse = false;
+  register_param(ellipse, "Ellipse", "Draw a red ellipse around the object");
+  recheck = 0.025;
+  face_notfound = cvRound(recheck * 1000);
+  register_param(recheck, "Recheck", "How often to detect an object in number of frames, divided by 1000");
+  threads = 0.01; //number of CPUs
+  register_param(threads, "Threads", "How many threads to use divided by 100; 0 uses CPU count");
+  search_scale = 0.12; // increase size of search window by 20% on each pass
+  register_param(search_scale, "Search scale", "The search window scale factor, divided by 10");
+  neighbors = 0.02; // require 2 neighbors
+  register_param(neighbors, "Neighbors", "Minimum number of rectangles that makes up an object, divided by 100");
+  smallest = 0.0; // smallest window size is trained default
+  register_param(smallest, "Smallest", "Minimum window size in pixels, divided by 1000");
+  largest = 0.0500; // largest object size shown is 500 px
+  register_param(largest, "Largest", "Maximum object size in pixels, divided by 10000");
 }
 
 FaceBl0r::~FaceBl0r() {
@@ -112,23 +125,26 @@ FaceBl0r::~FaceBl0r() {
 }
 
 void FaceBl0r::update() {
-  unsigned char *src = (unsigned char *)in;
-  unsigned char *dst = (unsigned char *)out;
 
   if (!cascade) {
+      cvSetNumThreads(cvRound(threads * 100));
       f0r_param_string classifier;
       get_param_value(&classifier, FACEBL0R_PARAM_CLASSIFIER);
       if (classifier) {
           cascade = (CvHaarClassifierCascade*) cvLoad(classifier, 0, 0, 0 );
+          if (!cascade)
+              fprintf(stderr, "ERROR: Could not load classifier cascade %s\n", classifier);
           storage = cvCreateMemStorage(0);
       }
-      else return;
+      else {
+          memcpy(out, in, size * 4);
+          return;
+	  }
   }
   if( !image )
       image = cvCreateImage( cvSize(width,height), IPL_DEPTH_8U, 4 );
 
-  unsigned char* ipli = (unsigned char*)image->imageData;
-  memcpy(image->imageData, in, size);
+  memcpy(image->imageData, in, size * 4);
 
   /*
     no face*
@@ -138,18 +154,14 @@ void FaceBl0r::update() {
      - no more face
        no face*
    */
-#define CHECK 25
-#define RECHECK 25
   if(face_notfound>0) {
 
-      if(face_notfound % CHECK == 0)
+      if(face_notfound % cvRound(recheck * 1000) == 0)
           face_rect = detect_face(image, cascade, storage);
 
       // if no face detected
       if (!face_rect) {
           face_notfound++;
-          memcpy(out, image->imageData, size);
-          return;
       } else {
           //track detected face with camshift
           if(tracked_obj)
@@ -165,35 +177,37 @@ void FaceBl0r::update() {
       //track the face in the new frame
       face_box = camshift_track_face(image, tracked_obj);
 
-      if( ( face_box.size.width < 10 ) // para
-          || (face_box.size.height < 10 ) 
-          || (face_box.size.width > 500 )
-          || (face_box.size.height > 500 )
+      int min = cvRound(smallest * 1000);
+          min = min? min : 10;
+      int max = cvRound(largest * 10000);
+      if( ( face_box.size.width < min )
+          || (face_box.size.height < min )
+          || (face_box.size.width > max )
+          || (face_box.size.height > max )
           ) {
-          
           face_found = 0;
           face_notfound++;
-          return;
       }
-
+      else {
 ////////////////////////////////////////////////////////////////////////
-      cvSetImageROI (image, tracked_obj->prev_rect);
-//  cvSmooth (image, image, CV_BLUR, 22, 22, 0, 0);
-      cvSmooth (image, image, CV_BLUR, 23, 23, 0, 0);
-//      cvSmooth (image, image, CV_GAUSSIAN, 11, 11, 0, 0);
-      cvResetImageROI (image);
+	      cvSetImageROI (image, tracked_obj->prev_rect);
+//          cvSmooth (image, image, CV_BLUR, 22, 22, 0, 0);
+		  cvSmooth (image, image, CV_BLUR, 23, 23, 0, 0);
+//          cvSmooth (image, image, CV_GAUSSIAN, 11, 11, 0, 0);
+		  cvResetImageROI (image);
 ////////////////////////////////////////////////////////////////////////
       
-      //outline face ellipse
-      cvEllipseBox(image, face_box, CV_RGB(255,0,0), 2, CV_AA, 0);
+          //outline face ellipse
+          if (ellipse)
+              cvEllipseBox(image, face_box, CV_RGB(255,0,0), 2, CV_AA, 0);
 
-      face_found++;
-      if(face_found % RECHECK == 0)
-          face_notfound = 1; // try recheck
-      
+          face_found++;
+          if(face_found % cvRound(recheck * 1000) == 0)
+              face_notfound = cvRound(recheck * 1000); // try recheck
+      }
   }
 
-  memcpy(out, image->imageData, size);
+  memcpy(out, image->imageData, size * 4);
   cvReleaseImage(&image);
 }
 
@@ -205,16 +219,26 @@ CvRect* FaceBl0r::detect_face (IplImage* image,
   CvRect* rect = 0;
   
   if (cascade && storage) {
+     //use an equalized gray image for better recognition
+     IplImage* gray = cvCreateImage(cvSize(image->width, image->height), 8, 1);
+     cvCvtColor(image, gray, CV_BGR2GRAY);
+     cvEqualizeHist(gray, gray);
+     cvClearMemStorage(storage);
+
       //get a sequence of faces in image
-      CvSeq *faces = cvHaarDetectObjects(image, cascade, storage,
-         1.2,                       //increase search scale by 50% each pass
-         2,                         //require 2 neighbors
+      int min = cvRound(smallest * 1000);
+      CvSeq *faces = cvHaarDetectObjects(gray, cascade, storage,
+         search_scale * 10.0,
+         cvRound(neighbors * 100),
+         CV_HAAR_FIND_BIGGEST_OBJECT|//since we track only the first, get the biggest
          CV_HAAR_DO_CANNY_PRUNING,  //skip regions unlikely to contain a face
-         cvSize(0, 0));             //use default face size from xml
+         cvSize(min, min));
     
       //if one or more faces are detected, return the first one
       if(faces && faces->total)
         rect = (CvRect*) cvGetSeqElem(faces, 0);
+
+      cvReleaseImage(&gray);
   }
 
   return rect;
