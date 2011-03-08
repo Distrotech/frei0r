@@ -1,5 +1,8 @@
 #include <stdlib.h>
 #include <assert.h>
+#if defined(_MSC_VER)
+#define _USE_MATH_DEFINES
+#endif
 #include <math.h>
 
 #include "frei0r.h"
@@ -41,7 +44,7 @@ void f0r_get_plugin_info(f0r_plugin_info_t* distorterInfo)
   distorterInfo->name = "Distort0r";
   distorterInfo->author = "Gephex crew";
   distorterInfo->plugin_type = F0R_PLUGIN_TYPE_FILTER;
-  distorterInfo->color_model = F0R_COLOR_MODEL_BGRA8888;
+  distorterInfo->color_model = F0R_COLOR_MODEL_PACKED32;
   distorterInfo->frei0r_version = FREI0R_MAJOR_VERSION;
   distorterInfo->major_version = 0; 
   distorterInfo->minor_version = 9; 
@@ -68,7 +71,7 @@ void f0r_get_param_info(f0r_param_info_t* info, int param_index)
 
 f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 {
-  distorter_instance_t* inst = calloc(1, sizeof(*inst));
+  distorter_instance_t* inst = (distorter_instance_t*)calloc(1, sizeof(*inst));
   inst->width = width; inst->height = height;
   inst->grid = 
     (grid_point_t*)malloc(sizeof(grid_point_t)*

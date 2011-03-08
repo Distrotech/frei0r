@@ -57,7 +57,7 @@ void f0r_get_param_info(f0r_param_info_t* info, int param_index)
 
 f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 {
-  uvmap_instance_t* inst = calloc(1, sizeof(*inst));
+  uvmap_instance_t* inst = (uvmap_instance_t*)calloc(1, sizeof(*inst));
   inst->width = width; inst->height = height;
   return (f0r_instance_t)inst;
 }
@@ -75,6 +75,11 @@ void f0r_get_param_value(f0r_instance_t instance,
 			 f0r_param_t param, int param_index)
 { /* no params */ }
 
+#if defined(_MSC_VER)
+__inline const long int lrintf(float x){
+	return (long int)(x+0.5);
+}
+#endif /* _MSC_VER */
 
 void f0r_update2(f0r_instance_t instance,
 		 double time,

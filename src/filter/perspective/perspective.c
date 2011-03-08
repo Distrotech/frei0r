@@ -117,7 +117,7 @@ void f0r_get_param_info( f0r_param_info_t* info, int param_index )
 
 f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 {
-	perspective_instance_t* inst = calloc(1, sizeof(*inst));
+	perspective_instance_t* inst = (perspective_instance_t*)calloc(1, sizeof(*inst));
 	inst->w = width;
 	inst->h = height;
 	inst->tl.x = 0.0;
@@ -173,6 +173,13 @@ void f0r_get_param_value(f0r_instance_t instance,
 			break;
 	}
 }
+
+#if defined(_MSC_VER)
+__inline const long lrint(double x){
+	return (long)(x+0.5);
+}
+#endif
+
 void f0r_update(f0r_instance_t instance, double time,
                 const uint32_t* inframe, uint32_t* outframe)
 {

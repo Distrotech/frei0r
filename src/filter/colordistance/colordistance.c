@@ -50,7 +50,7 @@ void f0r_get_plugin_info(f0r_plugin_info_t* colordistance_info)
 	colordistance_info->major_version = 0; 
 	colordistance_info->minor_version = 2; 
 	colordistance_info->num_params = 1; 
-	colordistance_info->explanation = "";//"Calculates the distance between the selected color and the current pixel and uses that value as new pixel value";
+	colordistance_info->explanation = "Calculates the distance between the selected color and the current pixel and uses that value as new pixel value";
 }
 
 void f0r_get_param_info(f0r_param_info_t* info, int param_index)
@@ -68,7 +68,7 @@ void f0r_get_param_info(f0r_param_info_t* info, int param_index)
 
 f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 {
-	colordistance_instance_t* inst = calloc(1, sizeof(*inst));
+	colordistance_instance_t* inst = (colordistance_instance_t*)calloc(1, sizeof(*inst));
 	inst->width = width; inst->height = height;
 	inst->color.r = 0.5;
 	inst->color.g = 0.5;
@@ -109,6 +109,11 @@ void f0r_get_param_value(f0r_instance_t instance,
 
 }
 
+#if defined(_MSC_VER)
+__inline const int rint(float x){
+	return (int)(x+0.5);
+}
+#endif
 
 void f0r_update(f0r_instance_t instance, double time,
 		const uint32_t* inframe, uint32_t* outframe)

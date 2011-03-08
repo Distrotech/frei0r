@@ -18,6 +18,9 @@
  */
 
 #include <stdlib.h>
+#if defined(_MSC_VER)
+#define _USE_MATH_DEFINES
+#endif /* _MSC_VER */
 #include <math.h>
 #include <assert.h>
 #include <string.h>
@@ -36,7 +39,7 @@ typedef struct hueshift0r_instance
 /* Updates the shift matrix. */
 void update_mat(hueshift0r_instance_t *inst)
 {
-  identmat(inst->mat);
+  identmat((float*)inst->mat);
   huerotatemat(inst->mat, (float)inst->hueshift);
 }
 
@@ -53,7 +56,7 @@ void f0r_get_plugin_info(f0r_plugin_info_t* info)
   info->name = "Hueshift0r";
   info->author = "Jean-Sebastien Senecal";
   info->plugin_type = F0R_PLUGIN_TYPE_FILTER;
-  info->color_model = F0R_COLOR_MODEL_BGRA8888;
+  info->color_model = F0R_COLOR_MODEL_RGBA8888;
   info->frei0r_version = FREI0R_MAJOR_VERSION;
   info->major_version = 0; 
   info->minor_version = 2; 
@@ -75,7 +78,7 @@ void f0r_get_param_info(f0r_param_info_t* info, int param_index)
 
 f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 {
-  hueshift0r_instance_t* inst = calloc(1, sizeof(*inst));
+  hueshift0r_instance_t* inst = (hueshift0r_instance_t*)calloc(1, sizeof(*inst));
   inst->width = width; inst->height = height;
   /* init transformation matrix */
   inst->hueshift = 0;

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59c)
-AC_INIT(frei0r-plugins, [1.1.22], [richard.spindler@gmail.com])
+AC_INIT(frei0r-plugins, [1.3.0], [frei0r-devel@piksel.no])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
@@ -11,9 +11,18 @@ AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CC_C99
-AC_PROG_LIBTOOL
+LT_INIT([disable-static])
+
 
 AC_CONFIG_HEADERS([include/config.h])
+
+if test "x${prefix}" = "xNONE"; then
+   prefix=${ac_default_prefix}
+fi
+PACKAGE_LIB_DIR="${prefix}/lib/frei0r-1"
+AC_SUBST(PACKAGE_LIB_DIR)
+PACKAGE_DATA_DIR="${prefix}/share/frei0r-1"
+AC_SUBST(PACKAGE_DATA_DIR)
 
 AC_MSG_CHECKING([host platform])
 case $host_os in
@@ -88,12 +97,18 @@ HAVE_OPENCV=false
 PKG_CHECK_MODULES(OPENCV, opencv >= 1.0.0, [HAVE_OPENCV=true], [true])
 AM_CONDITIONAL([HAVE_OPENCV], [test x$HAVE_OPENCV = xtrue])
 if test x$HAVE_OPENCV = xtrue; then
-    OPENCV_CFLAGS="$OPENCV_CFLAGS -DOPENCV_PREFIX=`pkg-config opencv --variable=prefix`"
+#    OPENCV_CFLAGS="$OPENCV_CFLAGS -DOPENCV_PREFIX=`pkg-config opencv --variable=prefix`"
+    AC_DEFINE(HAVE_OPENCV,1,[compiled including opencv])
+    AC_DEFINE(OPENCV_DATA_DIR,[${prefix}/share/opencv],opencv data prefix)
 fi
+AC_SUBST(HAVE_OPENCV)
 
 HAVE_GAVL=false
 PKG_CHECK_MODULES(GAVL, gavl >= 0.2.3, [HAVE_GAVL=true], [true])
 AM_CONDITIONAL([HAVE_GAVL], [test x$HAVE_GAVL = xtrue])
+
+AC_CHECK_PROG([DOXYGEN], [doxygen], [doxygen])
+
 
 AC_CONFIG_FILES([
   frei0r.pc
@@ -101,7 +116,6 @@ AC_CONFIG_FILES([
   include/Makefile
   src/Makefile
   doc/Makefile
-  doc/html/Makefile
 ])
 
 AC_OUTPUT
@@ -120,6 +134,7 @@ fi
 
 if test x$HAVE_OPENCV = xtrue; then
 echo "    - opencv: YES"
+echo "              data dir: $OPENCV_DATA_DIR"
 else
 echo "    - opencv: NO"
 echo "              opencv >= 1.0.0 not found - this program enables optional"

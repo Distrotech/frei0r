@@ -22,9 +22,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef int bool;
-static const int false = 0;
-static const int true = 1;
+typedef int boolean;
+#define FALSE 0
+#define TRUE 1
 
 typedef struct host_param_test_instance {
 	double dvalue;
@@ -88,19 +88,19 @@ void f0r_get_param_info( f0r_param_info_t* info, int param_index )
 
 f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 {
-	host_param_test_instance_t* inst = calloc(1, sizeof(*inst));
+	host_param_test_instance_t* inst = (host_param_test_instance_t*)calloc(1, sizeof(*inst));
 	inst->w = width;
 	inst->h = height;
 
 	inst->dvalue = 0.5;
-	inst->bvalue = false;
+	inst->bvalue = FALSE;
 	inst->cvalue.r = 0.5;
 	inst->cvalue.g = 0.5;
 	inst->cvalue.b = 0.5;
 	inst->pvalue.x = 0.0;
 	inst->pvalue.y = 0.0;
 	const char* sval = "Hello";
-	inst->svalue = malloc( strlen(sval) + 1 );
+	inst->svalue = (char*)malloc( strlen(sval) + 1 );
 	strcpy( inst->svalue, sval );
 	return (f0r_instance_t)inst;
 }
@@ -130,7 +130,7 @@ void f0r_set_param_value(f0r_instance_t instance,
 		case 4:
 		{
 			char* sval = ((char*)param);
-			inst->svalue = realloc( inst->svalue, strlen(sval) + 1 );
+			inst->svalue = (char*)realloc( inst->svalue, strlen(sval) + 1 );
 			strcpy( inst->svalue, sval );
 			break;
 		}

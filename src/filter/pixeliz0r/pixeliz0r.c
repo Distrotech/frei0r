@@ -34,7 +34,7 @@ void f0r_get_plugin_info(f0r_plugin_info_t* pixelizerInfo)
   pixelizerInfo->name = "pixeliz0r";
   pixelizerInfo->author = "Gephex crew";
   pixelizerInfo->plugin_type = F0R_PLUGIN_TYPE_FILTER;
-  pixelizerInfo->color_model = F0R_COLOR_MODEL_BGRA8888;
+  pixelizerInfo->color_model = F0R_COLOR_MODEL_PACKED32;
   pixelizerInfo->frei0r_version = FREI0R_MAJOR_VERSION;
   pixelizerInfo->major_version = 1; 
   pixelizerInfo->minor_version = 0; 
@@ -61,7 +61,7 @@ void f0r_get_param_info(f0r_param_info_t* info, int param_index)
 
 f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 {
-  pixelizer_instance_t* inst = calloc(1, sizeof(*inst));
+  pixelizer_instance_t* inst = (pixelizer_instance_t*)calloc(1, sizeof(*inst));
   inst->width = width; inst->height = height;
   inst->block_size_x = 8; inst->block_size_y = 8;
   return (f0r_instance_t)inst;
