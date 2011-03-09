@@ -43,20 +43,3 @@ Description: minimalistic plugin API for video effects, header files
  This package contains the header needed to enable frei0r in other package
  at build time.
 
-
-Package: frei0r-plugins-doc
-Section: doc
-Architecture: all
-Depends: ${misc:Depends}
-Description: minimalistic plugin API for video effects, API documentation
- frei0r is a minimalistic plugin API for video sources and filters. The
- behavior of the effects can be controlled from the host by simple
- parameters. The intent is to solve the recurring reimplementation or
- adaptation issue of standard effects. It is not meant as a generic API for
- all kinds of video applications.
- .
- frei0r plugins are used by several projects (e.g.: LiVES, Veejay, Open Movie
- Editor, FreeJ, Pure Data Visual Junk Tools, MLT framework).
- .
- This package contains the API documentation.
-  
