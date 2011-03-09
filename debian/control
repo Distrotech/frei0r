@@ -2,21 +2,18 @@ Source: frei0r
 Section: video
 Priority: optional
 Maintainer: Luca Bigliardi <shammash@artha.org>
-Uploaders: Denis Rojo <jaromil@dyne.org>
+Uploaders: Denis Roio <jaromil@dyne.org>
 DM-Upload-Allowed: yes
-Vcs-Git: git://git.dyne.org/frei0r.git
-Vcs-Browser: http://git.dyne.org/?r=frei0r
-Homepage: http://www.piksel.org/frei0r
+Vcs-Git: git://code.dyne.org/frei0r.git
+Vcs-Browser: http://code.dyne.org/?r=frei0r
+Homepage: http://frei0r.dyne.org
 Build-Depends: cdbs, debhelper (>> 5.0.0), pkg-config, libcv-dev, libgavl-dev (>= 1.1.0),
  libcvaux-dev, libhighgui-dev
-Standards-Version: 3.8.3
+Standards-Version: 3.9.1
 
 Package: frei0r-plugins
-Section: video
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Conflicts: frei0r (<= 1.1.22)
-Replaces: frei0r
 Description: minimalistic plugin API for video effects, plugins collection
  frei0r is a minimalistic plugin API for video sources and filters. The
  behavior of the effects can be controlled from the host by simple
@@ -33,8 +30,6 @@ Package: frei0r-plugins-dev
 Section: devel
 Architecture: any
 Depends: ${misc:Depends}
-Conflicts: frei0r-dev (<= 1.1.22)
-Replaces: frei0r-dev
 Description: minimalistic plugin API for video effects, header files
  frei0r is a minimalistic plugin API for video sources and filters. The
  behavior of the effects can be controlled from the host by simple
@@ -48,12 +43,11 @@ Description: minimalistic plugin API for video effects, header files
  This package contains the header needed to enable frei0r in other package
  at build time.
 
+
 Package: frei0r-plugins-doc
 Section: doc
 Architecture: all
 Depends: ${misc:Depends}
-Conflicts: frei0r-doc (<= 1.1.22)
-Replaces: frei0r-doc
 Description: minimalistic plugin API for video effects, API documentation
  frei0r is a minimalistic plugin API for video sources and filters. The
  behavior of the effects can be controlled from the host by simple
@@ -65,4 +59,4 @@ Description: minimalistic plugin API for video effects, API documentation
  Editor, FreeJ, Pure Data Visual Junk Tools, MLT framework).
  .
  This package contains the API documentation.
-
+  
